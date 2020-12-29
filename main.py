@@ -25,3 +25,6 @@ while True:
         input('press [enter] to continue')
     elif usr_cmd == 'exit':
         quit()
+    else:
+        print('This option is invalid, please enter a valid input or type "exit" for quitting.')
+        input('press [enter] to continue')
