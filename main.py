@@ -1,4 +1,5 @@
 from LinearFunctions import *
+from os import system
 
 
 menu = '''
@@ -8,10 +9,11 @@ if you wish to exit, type "exit":
 
 1: y = mx + b
 2: y - y1 = m(x - x1)
-3: ax + bx = c
+3: ax + by = c
 
 '''
 while True:
+    system('clear')
     usr_cmd = input(f'{menu}> ').replace(' ', '')
 
     if usr_cmd == '1' or usr_cmd == 'y=mx+b':
@@ -24,6 +26,7 @@ while True:
         print('\n\n' + Standard(input('please enter your function: ')).info() + '\n\n')
         input('press [enter] to continue')
     elif usr_cmd == 'exit':
+        system('clear')
         quit()
     else:
         print('This option is invalid, please enter a valid input or type "exit" for quitting.')

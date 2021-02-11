@@ -1,0 +1,14 @@
+PROJECT DESCRIPTION:
+
+This program takes a linear function as an input, analizes the function
+behind the scenes, and outputs the analisis.
+
+This program only works for linear functions.
+
+Please report any bugs you find at:
+* The github page: https://github.com/j0eTheRipper/function-analisis (RECOMMENDED)
+* My email: j0eTheRipper@protonmail.com
+
+Done by: Youssef Alaa
+Grade: 10-B
+Teacher: Ramadan Mahmoud
