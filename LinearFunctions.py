@@ -13,21 +13,24 @@ class LinearFunctions:
             return f'+ {value}' if value > 0 else f'- {abs(value)}'
 
     @staticmethod
-    def parse_value(value):
-        if value == '+':
-            return 1
-        elif value == '-':
-            return -1
-
+    def round(value):
         rounded = round(float(value), 2)
-
         if rounded == int(rounded):
             return int(rounded)
         else:
             return rounded
 
     @staticmethod
-    def mx(slope, char='x'):
+    def parse_value(value):
+        if value == '+':
+            return 1
+        elif value == '-':
+            return -1
+        else:
+            return LinearFunctions.round(value)
+
+    @staticmethod
+    def parse_slope(slope, char='x'):
         if slope == 0:
             return ''
         elif slope == 1:
@@ -50,20 +53,20 @@ class LinearFunctions:
     def get_intercept(self, intercept):
         pass
 
-    def to_point_slope(self):
+    def get_point_slope(self):
         pass
 
-    def to_slope_intercept(self):
+    def get_slope_intercept(self):
         pass
 
-    def to_standard(self):
+    def get_standard(self):
         pass
 
     def info(self):
         return f'''Forms of the function:
-Standard ==> {self.to_standard()}
-Slope intercept ==> {self.to_slope_intercept()}
-Point slope ==> {self.to_point_slope()}
+Standard ==> {self.get_standard()}
+Slope intercept ==> {self.get_slope_intercept()}
+Point slope ==> {self.get_point_slope()}
 
      𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑𝛑
 
@@ -84,29 +87,35 @@ class PointSlope(LinearFunctions):
         self.x1 = - self.parse_value(self.function[1].split('x')[1].replace(')', ''))
         self.y1 = - self.parse_value(self.function[0].replace('y', ''))
 
+    def get_y_intercept(self):
+        self.y_intercept = - self.slope * self.x1 + self.y1
+        return self.y_intercept
+
+    def get_x_intercept(self):
+        self.x_intercept = (- self.y1 + self.slope * self.x1) / self.slope
+        return self.x_intercept
+
     def get_intercept(self, intercept):
         """Getting the intercepts of the function"""
         if intercept == 'x':
-            self.x_intercept = (- self.y1 + self.slope * self.x1) / self.slope
-            return self.x_intercept
+            return self.get_x_intercept()
         elif intercept == 'y':
-            self.y_intercept = - self.slope * self.x1 + self.y1
-            return self.y_intercept
+            return self.get_y_intercept()
 
-    def to_slope_intercept(self):
+    def get_slope_intercept(self):
         b = - (self.slope * self.x1) + self.y1
-        return SlopeIntercept(f'y = {self.mx(self.slope)} {self.parse_sign(b)}')
+        return SlopeIntercept(f'y = {self.parse_slope(self.slope)} {self.parse_sign(b)}')
 
-    def to_standard(self):
+    def get_standard(self):
         a = self.slope * self.x1
         c = -a + self.y1
-        return Standard(f'{self.mx(- self.slope)} + y = {c}')
+        return Standard(f'{self.parse_slope(- self.slope)} + y = {c}')
 
-    def to_point_slope(self):
+    def get_point_slope(self):
         return self
 
     def __str__(self):
-        return f'y {self.parse_sign(self.y1, True)} = {self.mx(self.slope, "(x")} {self.parse_sign(self.x1, True)})'
+        return f'y {self.parse_sign(self.y1, True)} = {self.parse_slope(self.slope, "(x")} {self.parse_sign(self.x1, True)})'
 
 
 class SlopeIntercept(LinearFunctions):
@@ -114,31 +123,35 @@ class SlopeIntercept(LinearFunctions):
         super().__init__(function)
         self.slope = self.get_slope(self.function[1].split('x')[0])
 
+    def get_x_intercept(self):
+        self.x_intercept = - self.y_intercept / self.slope
+        return self.x_intercept
+
     def get_intercept(self, intercept):
         self.y_intercept = self.parse_value(self.function[1].split('x')[1].replace(' ', ''))
 
         if intercept == 'x':
-            self.x_intercept = - self.y_intercept / self.slope
-            return self.x_intercept
+            return self.get_x_intercept()
         elif intercept == 'y':
             return self.y_intercept
 
-    def to_point_slope(self):
-        self.get_intercept('y')
-
+    def get_point_slope(self):
         x = abs(self.y_intercept) + 1
-        y = (self.slope * x) + self.y_intercept
+        x = self.parse_sign(x, True)
+        y = (self.slope * x) + self.get_intercept('y')
+        y = self.parse_sign(y, True)
+        slope = self.parse_slope(self.slope, '(')
 
-        return PointSlope(f'y {self.parse_sign(y, True)} = {self.mx(self.slope, "(")}x {self.parse_sign(x, True)})')
+        return PointSlope(f'y {y} = {slope}x {x})')
 
-    def to_standard(self):
+    def get_standard(self):
         return Standard(f'{- self.slope}x + y = {self.get_intercept("y")}')
 
-    def to_slope_intercept(self):
+    def get_slope_intercept(self):
         return self
 
     def __str__(self):
-        return f'y = {self.mx(self.slope)} {self.parse_sign(self.get_intercept("y"))}'
+        return f'y = {self.parse_slope(self.slope)} {self.parse_sign(self.get_intercept("y"))}'
 
 
 class Standard(LinearFunctions):
@@ -155,7 +168,7 @@ class Standard(LinearFunctions):
         elif intercept == 'y':
             return self.c / self.b
 
-    def to_slope_intercept(self):
+    def get_slope_intercept(self):
         b = self.c / self.b
         if b < 0:
             b = f'- {abs(b)}'
@@ -164,11 +177,11 @@ class Standard(LinearFunctions):
 
         return SlopeIntercept(f'y = {- self.a / self.b}x {b}')
 
-    def to_point_slope(self):
-        return self.to_slope_intercept().to_point_slope()
+    def get_point_slope(self):
+        return self.get_slope_intercept().get_point_slope()
 
-    def to_standard(self):
+    def get_standard(self):
         return self
 
     def __str__(self):
-        return f'{self.mx(self.a, "x")} + {self.mx(self.b, "y")} = {self.c}'
+        return f'{self.parse_slope(self.a, "x")} + {self.parse_slope(self.b, "y")} = {self.c}'
